@@ -164,6 +164,7 @@ class Brizy_Editor_Editor_Editor {
 					'setFeaturedImage'           => Brizy_Editor_API::AJAX_SET_FEATURED_IMAGE,
 					'setFeaturedImageFocalPoint' => Brizy_Editor_API::AJAX_SET_FEATURED_IMAGE_FOCAL_POINT,
 					'removeFeaturedImage'        => Brizy_Editor_API::AJAX_REMOVE_FEATURED_IMAGE,
+					'saveBlockScreenshot' => Brizy_Editor_BlockScreenshotApi::AJAX_SAVE_BLOCK_SCREENSHOT,
 				),
 				'plugins'         => array(
 					'dummy'       => true,
@@ -207,16 +208,16 @@ class Brizy_Editor_Editor_Editor {
 		return (object) $attachment_data;
 	}
 
-	public function get_asset_url( $template_version = null ) {
-
-		$upload_dir_info = wp_upload_dir( null, true );
-
-		if ( is_null( $template_version ) ) {
-			$template_version = BRIZY_EDITOR_VERSION;
-		}
-
-		return $upload_dir_info['baseurl'] . sprintf( Brizy_Config::BRIZY_WP_EDITOR_ASSET_PATH, $template_version );
-	}
+//	public function get_asset_url( $template_version = null ) {
+//
+//		$upload_dir_info = wp_upload_dir( null, true );
+//
+//		if ( is_null( $template_version ) ) {
+//			$template_version = BRIZY_EDITOR_VERSION;
+//		}
+//
+//		return $upload_dir_info['baseurl'] . sprintf( Brizy_Config::BRIZY_WP_EDITOR_ASSET_PATH, $template_version );
+//	}
 
 	private function get_woocomerce_plugin_info() {
 		if ( function_exists( 'wc' ) && defined( 'WC_PLUGIN_FILE' ) ) {

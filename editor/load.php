@@ -53,7 +53,8 @@ function brizy_initialize_Brizy_Public_Api() {
 			return;
 		}
 
-		$api_instance = new Brizy_Editor_API( $project, $post );
+		new Brizy_Editor_API( $project, $post );
+		new Brizy_Editor_BlockScreenshotApi( $project, $post );
 
 	} catch ( Exception $e ) {
 		Brizy_Logger::instance()->exception( $e );
