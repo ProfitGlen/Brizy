@@ -27,22 +27,8 @@ class Brizy_Public_BlockScreenshotProxy extends Brizy_Public_AbstractProxy {
 			return;
 		}
 
-		// Check if user is not querying API
-		if ( ! isset( $vars[ self::ENDPOINT_BLOCK_TYPE ] ) || ! is_string( $vars[ self::ENDPOINT_BLOCK_TYPE ] ) ) {
-			return;
-		}
-
-		// Check if user is not querying API
-		if ( $vars[ self::ENDPOINT_BLOCK_TYPE ] == 'normal' ) {
-			if ( ! isset( $vars[ self::ENDPOINT_POST ] ) || ! is_numeric( $vars[ self::ENDPOINT_POST ] ) ) {
-				return;
-			}
-		}
-
 		$blockName = $vars[ self::ENDPOINT ];
-		$blockType = $vars[ self::ENDPOINT_BLOCK_TYPE ];
 		$blockPost = isset( $vars[ self::ENDPOINT_POST ] ) ? $vars[ self::ENDPOINT_POST ] : null;
-
 
 		$types = array( 'normal', 'global', 'saved' );
 
