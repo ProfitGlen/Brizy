@@ -10,13 +10,12 @@ class Brizy_Public_BlockScreenshotProxy extends Brizy_Public_AbstractProxy {
 
 	const ENDPOINT = 'brizy_block_screenshot';
 	const ENDPOINT_POST = 'brizy_post';
-	const ENDPOINT_BLOCK_TYPE = 'brizy_block_type';
 
 	/**
 	 * @return string
 	 */
 	protected function get_endpoint_keys() {
-		return array( self::ENDPOINT, self::ENDPOINT_POST, self::ENDPOINT_BLOCK_TYPE );
+		return array( self::ENDPOINT, self::ENDPOINT_POST );
 	}
 
 	public function process_query() {
@@ -44,9 +43,17 @@ class Brizy_Public_BlockScreenshotProxy extends Brizy_Public_AbstractProxy {
 		$blockType = $vars[ self::ENDPOINT_BLOCK_TYPE ];
 		$blockPost = isset( $vars[ self::ENDPOINT_POST ] ) ? $vars[ self::ENDPOINT_POST ] : null;
 
-		$filePath = $this->getBlockScreenshotPath( $blockName, $blockType, $blockPost );
 
-		$this->send_file( $filePath );
+		$types = array( 'normal', 'global', 'saved' );
+
+		foreach ( $types as $type ) {
+			$filePath = $this->getBlockScreenshotPath( $blockName, $type, $blockPost );
+			if ( file_exists( $filePath ) ) {
+				$this->send_file( $filePath );
+
+				return;
+			}
+		}
 
 		return;
 	}
