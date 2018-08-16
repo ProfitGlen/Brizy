@@ -119,64 +119,44 @@ class Brizy_Editor_BlockScreenshotApi {
 	 * @return bool
 	 */
 	private function saveScreenshot( $type, $blockFileName, $content ) {
-		switch ( $type ) {
-			case self::BLOCK_TYPE_NORMAL:
-				return $this->storeNormalBlockThumbnail( $blockFileName, $content );
-			case self::BLOCK_TYPE_GLOBAL:
-				return $this->storeGlobalBlockThumbnail( $blockFileName, $content );
-			case self::BLOCK_TYPE_SAVED:
-				return $this->storeSaveBlockThumbnail( $blockFileName, $content );
+		try {
+			switch ( $type ) {
+				case self::BLOCK_TYPE_NORMAL:
+					return $this->storeThumbnail( $content, $this->urlBuilder->page_upload_path( 'blockThumbnails' . DIRECTORY_SEPARATOR . $blockFileName ) );
+				case self::BLOCK_TYPE_GLOBAL:
+					return $this->storeThumbnail( $content, $this->urlBuilder->brizy_upload_path( 'blockThumbnails' . DIRECTORY_SEPARATOR . 'global' . DIRECTORY_SEPARATOR . $blockFileName ) );
+				case self::BLOCK_TYPE_SAVED:
+					return $this->storeThumbnail( $content, $this->urlBuilder->brizy_upload_path( 'blockThumbnails' . DIRECTORY_SEPARATOR . 'saved' . DIRECTORY_SEPARATOR . $blockFileName ) );
+			}
+		} catch ( Exception $e ) {
+			return false;
 		}
 	}
 
 	/**
-	 * @param $blockId
-	 * @param $blockFileName
 	 * @param $content
+	 * @param $filePath
 	 *
 	 * @return bool
 	 */
-	private function storeNormalBlockThumbnail( $blockFileName, $content ) {
-		$path = $this->urlBuilder->page_upload_path( 'blockThumbnails' );
+	private function storeThumbnail( $content, $filePath ) {
+		$store_file = $this->storeFile( $content, $filePath );
 
-		return $this->storeFile( $content, $path, $blockFileName );
-	}
+		if ( $store_file ) {
+			$store_file = $this->resizeImage( $filePath );
+		}
 
-	/**
-	 * @param $blockId
-	 * @param $blockFileName
-	 * @param $content
-	 *
-	 * @return bool
-	 */
-	private function storeGlobalBlockThumbnail( $blockFileName, $content ) {
-		$path = $this->urlBuilder->brizy_upload_path( 'blockThumbnails' . DIRECTORY_SEPARATOR . 'global' );
-
-		return $this->storeFile( $content, $path, $blockFileName );
-	}
-
-	/**
-	 * @param $blockId
-	 * @param $blockFileName
-	 * @param $content
-	 *
-	 * @return bool
-	 */
-	private function storeSaveBlockThumbnail( $blockFileName, $content ) {
-		$path = $this->urlBuilder->brizy_upload_path( 'blockThumbnails' . DIRECTORY_SEPARATOR . 'saved' );
-
-		return $this->storeFile( $content, $path, $blockFileName );
+		return $store_file;
 	}
 
 	/**
 	 * @param $content
-	 * @param $path
-	 * @param $blockFileName
+	 * @param $thumbnailFullPath
 	 *
 	 * @return bool
 	 */
-	private function storeFile( $content, $path, $blockFileName ) {
-		$thumbnailFullPath = $path . DIRECTORY_SEPARATOR . $blockFileName;
+	private function storeFile( $content, $thumbnailFullPath ) {
+		$path = dirname( $thumbnailFullPath );
 
 		if ( ! file_exists( $path ) ) {
 			if ( ! @mkdir( $path, 0755, true ) ) {
@@ -186,5 +166,24 @@ class Brizy_Editor_BlockScreenshotApi {
 
 		return file_put_contents( $thumbnailFullPath, $content ) !== false;
 	}
+
+
+	/**
+	 * @param $thumbnailFullPath
+	 *
+	 * @return bool
+	 */
+	private function resizeImage( $thumbnailFullPath ) {
+		try {
+			$imageEditor = wp_get_image_editor( $thumbnailFullPath );
+			$imageEditor->resize( 600, 600 );
+			$result = $imageEditor->save( $thumbnailFullPath );
+
+			return is_array( $result );
+		} catch ( Exception $e ) {
+			return false;
+		}
+	}
+
 
 }
