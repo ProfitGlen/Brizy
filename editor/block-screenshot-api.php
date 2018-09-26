@@ -40,7 +40,7 @@ class Brizy_Editor_BlockScreenshotApi {
 
 		$this->project    = $project;
 		$this->post       = $post;
-		$this->urlBuilder = new Brizy_Editor_UrlBuilder( $project, $post->get_parent_id() );
+		$this->urlBuilder = new Brizy_Editor_UrlBuilder( $project, $post ? $post->get_parent_id() : null );
 		$this->blockTypes = array( self::BLOCK_TYPE_NORMAL, self::BLOCK_TYPE_GLOBAL, self::BLOCK_TYPE_SAVED );
 		$this->initialize();
 	}
